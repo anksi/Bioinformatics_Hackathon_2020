@@ -4,6 +4,7 @@ library(tidyverse)
 library(DESeq2)
 library(readxl)
 # library(cmapR)
+library(stringr)
 }
 
 # setwd("D:/GitHub/Bioinformatics_Hackathon_2020/taoyu_mei")
@@ -48,6 +49,50 @@ geneCounts_liver <- geneCounts[c('Name', 'Description',
                                  intersect(pheno2$SAMPID_liver, colnames(geneCounts)))]
 
 # make ready for differential expression analysis -------------------------
+
+# make 2 colData for the 2 organs
+
+# pancreas
+colDataPancreas <- pheno2[c('SAMPID_pancreas', 'Sex', 'Age.Bracket', 'Hardy.Scale', 
+                            'Fat,Percentage_liver', 'Fat,Percentage_pancreas')]
+colDataPancreas <- filter(colDataPancreas, 
+                          SAMPID_pancreas %in% colnames(geneCounts_pancreas))
+
+colDataPancreas$Age.Bracket <- gsub("^[60|70].*", "old", colDataPancreas$Age.Bracket)
+colDataPancreas$Age.Bracket <- gsub("^[40|50].*", "mid_age", colDataPancreas$Age.Bracket)
+colDataPancreas$Age.Bracket <- gsub("^[20|30].*", "young", colDataPancreas$Age.Bracket)
+
+row_names <- colDataPancreas$SAMPID_pancreas
+colDataPancreas <-as.matrix(colDataPancreas[-1])
+row.names(colDataPancreas) <- row_names
+
+
+# liver
+colDataLiver <- pheno2[c('SAMPID_liver', 'Sex', 'Age.Bracket', 'Hardy.Scale', 
+                            'Fat,Percentage_liver', 'Fat,Percentage_pancreas')]
+colDataLiver <- filter(colDataLiver, 
+                          SAMPID_liver %in% colnames(geneCounts_liver))
+
+colDataLiver$Age.Bracket <- gsub("^[60|70].*", "old", colDataLiver$Age.Bracket)
+colDataLiver$Age.Bracket <- gsub("^[40|50].*", "mid_age", colDataLiver$Age.Bracket)
+colDataLiver$Age.Bracket <- gsub("^[20|30].*", "young", colDataLiver$Age.Bracket)
+
+row_names <- colDataLiver$SAMPID_liver
+colDataLiver <-as.matrix(colDataLiver[-1])
+row.names(colDataLiver) <- row_names
+
+
+# convert the count matrices' row names to fit DESeq2
+countMatrixPancreas <- as.matrix(geneCounts_pancreas[c(-1, -2)])
+row.names(countMatrixPancreas) <- geneCounts_pancreas$Name
+
+countMatrixLiver <- as.matrix(geneCounts_liver[c(-1, -2)])
+row.names(countMatrixLiver) <- geneCounts_liver$Name
+
+# add a group variable to colData according to the patients' age group
+# according to DESeq2's vignette
+# PCA, heatmap & hierarchical clustering tree to examine the difference of the 2 groups
+
 
 
 
