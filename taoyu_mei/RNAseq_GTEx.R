@@ -48,15 +48,18 @@ geneCounts_pancreas <- geneCounts[c('Name', 'Description',
 geneCounts_liver <- geneCounts[c('Name', 'Description', 
                                  intersect(pheno2$SAMPID_liver, colnames(geneCounts)))]
 
+
+
 # make ready for differential expression analysis -------------------------
 
-# make 2 colData for the 2 organs
+# make 2 colData for the 2 organs; add a group variable according to age group
 
 # pancreas
 colDataPancreas <- pheno2[c('SAMPID_pancreas', 'Sex', 'Age.Bracket', 'Hardy.Scale', 
                             'Fat,Percentage_liver', 'Fat,Percentage_pancreas')]
 colDataPancreas <- filter(colDataPancreas, 
                           SAMPID_pancreas %in% colnames(geneCounts_pancreas))
+colDataPancreas <- unique.data.frame(colDataPancreas)  # remove duplicate
 
 colDataPancreas$Age.Bracket <- gsub("^[60|70].*", "old", colDataPancreas$Age.Bracket)
 colDataPancreas$Age.Bracket <- gsub("^[40|50].*", "mid_age", colDataPancreas$Age.Bracket)
@@ -72,6 +75,7 @@ colDataLiver <- pheno2[c('SAMPID_liver', 'Sex', 'Age.Bracket', 'Hardy.Scale',
                             'Fat,Percentage_liver', 'Fat,Percentage_pancreas')]
 colDataLiver <- filter(colDataLiver, 
                           SAMPID_liver %in% colnames(geneCounts_liver))
+colDataLiver <- unique.data.frame(colDataLiver)
 
 colDataLiver$Age.Bracket <- gsub("^[60|70].*", "old", colDataLiver$Age.Bracket)
 colDataLiver$Age.Bracket <- gsub("^[40|50].*", "mid_age", colDataLiver$Age.Bracket)
@@ -89,9 +93,26 @@ row.names(countMatrixPancreas) <- geneCounts_pancreas$Name
 countMatrixLiver <- as.matrix(geneCounts_liver[c(-1, -2)])
 row.names(countMatrixLiver) <- geneCounts_liver$Name
 
-# add a group variable to colData according to the patients' age group
-# according to DESeq2's vignette
-# PCA, heatmap & hierarchical clustering tree to examine the difference of the 2 groups
+
+# check the sample existence and order
+
+# all(rownames(colDataLiver) %in% colnames(countMatrixLiver))
+all(rownames(colDataLiver) == colnames(countMatrixLiver))
+all(rownames(colDataPancreas) == colnames(countMatrixPancreas))
+
+
+
+
+# overview of the gene expression before DE analysis ----------------------
+
+
+# PCA
+
+
+# heatmap 
+
+
+# hierarchical clustering tree 
 
 
 
