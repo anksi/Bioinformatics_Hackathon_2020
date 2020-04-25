@@ -100,11 +100,18 @@ row.names(countMatrixLiver) <- geneCounts_liver$Name
 all(rownames(colDataLiver) == colnames(countMatrixLiver))
 all(rownames(colDataPancreas) == colnames(countMatrixPancreas))
 
+saveRDS(colDataLiver, "colDataLiver.rds")
+saveRDS(countMatrixLiver, "countMatrixLiver.rds")
+saveRDS(colDataPancreas, "colDataPancreas.rds")
+saveRDS(countMatrixPancreas, "countMatrixPancreas.rds")
+
+
+# create a dds object
 
 
 
 # overview of the gene expression before DE analysis ----------------------
-
+vsd <- vst(dds, blind=FALSE)
 
 # PCA
 
@@ -113,6 +120,12 @@ all(rownames(colDataPancreas) == colnames(countMatrixPancreas))
 
 
 # hierarchical clustering tree 
+
+
+
+# DE analysis -------------------------------------------------------------
+
+
 
 
 
